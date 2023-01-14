@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import generics, permissions, exceptions
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Product, User, Order
+from .models import Product, User, Order, OrderItem
 from .serializers import ProductSerializer, UserSerializer, UserProfileSerializer, OrderAddSerializer, OrderItemAddSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
-
+from itertools import chain
 # ----------------------------------------------------------------
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -202,16 +202,45 @@ class OrderItemAddAPIView(generics.CreateAPIView):
     serializer_class = OrderItemAddSerializer   
 
 
-class OrderDetailAPIView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
+
+# generics.RetrieveAPIView
+class OrderDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    # serializer_class = ord
+    
+    def get(request, *args, **kwargs):
+        pk = request.kwargs['pk']
+        data  = {}
 
+        order = Order.objects.get(pk=pk)
+        order_id = order.id
+        data['order_id'] = order_id
+        data['user'] = order.user.id
+        data['total'] = order.total
+        data['address'] = order.address
+        data['postal_code'] = order.postal_code
+        # print(data)        
+        
+        product = OrderItem.objects.filter(order=order_id)
+        product_data = list(product.values())
+        # for i in product_data:
+        #     data['products'] = i
+        # print(product_data[0]['product_name'])
+            # print(product_id)
+        
+        data['products'] = product_data
+        return JsonResponse(data)   
+    # serializer_class = OrderDetailSerializer
+    # order = Order.objects.all()
+    # print(order)
+    # order_item = OrderDetail.objects.all()
+    # queryset = chain(order, order_item)\
+    # def get_object(self):    
 
-    # def get(self, request, pk):
-    #     order = Order.objects.get(pk=pk)
-    #     print(order)
-    #     return JsonResponse(order)
+    # def get_queryset(self):
+    #     pk = self.request.data
+    #     print(pk)
+    #     return OrderDetail.objects.get(pk=pk)
+    
     
             
 # class OrderItemAPIView(generics.CreateAPIView):

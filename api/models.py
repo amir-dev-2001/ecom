@@ -69,7 +69,13 @@ class OrderItem(models.Model):
     def __str__(self):
         return str(self.id) + ' - ' + str(self.product) + ' => ' + str(self.order)
                 
-                
+
+# class OrderDetail(models.Model):
+#     order = models.ForeignKey(Order, related_name="order_detail", on_delete=models.CASCADE)
+#     order_items = models.ManyToManyField(OrderItem, related_name="order_items")    
+    
+#     def __str__(self):
+#         return str(self.order.user)                
 
 '''
 class Order(models.Model):

@@ -1,4 +1,4 @@
-from .models import Product, User, Order, OrderItem
+from .models import Product, User, Order, OrderItem 
 from rest_framework.serializers  import ModelSerializer, HyperlinkedModelSerializer, ReadOnlyField, PrimaryKeyRelatedField
 
 
@@ -93,10 +93,10 @@ class OrderItemAddSerializer(ModelSerializer):
         fields = '__all__'                
                 
 
-# class OrderItemSerializer(ModelSerializer):
+# class OrderDetailSerializer(ModelSerializer):
 #     class Meta:
-#         model = OrderItem
-#         fields = ('order','product', 'count')
+#         model = OrderDetail
+#         fields = '__all__'
         
 # class OrderDetailAPIView(ModelSerializer):
     
