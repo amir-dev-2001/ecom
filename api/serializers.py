@@ -1,5 +1,5 @@
 from .models import Product, User, Order, OrderItem
-from rest_framework.serializers  import ModelSerializer, HyperlinkedModelSerializer, ReadOnlyField
+from rest_framework.serializers  import ModelSerializer, HyperlinkedModelSerializer, ReadOnlyField, PrimaryKeyRelatedField
 
 
 class ProductSerializer(ModelSerializer):
@@ -79,12 +79,30 @@ class UserProfileSerializer(ModelSerializer):
 class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
-        fields = ('user','total', 'address', 'postal_code')
+        fields = '__all__'
                 
 
-class OrderItemSerializer(ModelSerializer):
+class OrderAddSerializer(ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'       
+        
+class OrderItemAddSerializer(ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('order','product', 'count')
+        fields = '__all__'                
+                
+
+# class OrderItemSerializer(ModelSerializer):
+#     class Meta:
+#         model = OrderItem
+#         fields = ('order','product', 'count')
         
-        
+# class OrderDetailAPIView(ModelSerializer):
+    
+#     order = PrimaryKeyRelatedField(queryset=Order.objects.all())
+    
+#     class Meta:
+#         model = OrderItem
+#         fields = ('product', 'order')
+#         depth = 1

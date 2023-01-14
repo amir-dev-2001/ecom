@@ -15,8 +15,9 @@ from .views import (
     UserProfileUpdateView,
     MyTokenObtainPairView,\
     UserProfile,
-    OrderAPIView,
-    OrderItemAPIView
+    OrderAddAPIView,
+    OrderItemAddAPIView,
+    OrderDetailAPIView
 )
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework_simplejwt.views import (
@@ -43,9 +44,10 @@ urlpatterns = [
     path('users/', UserList.as_view()),
     path('users/profile/', UserProfile.as_view()),
     
-    path('order/add/', OrderAPIView.as_view(), name='order.add'),
-    path('order/item/add/', OrderItemAPIView.as_view(), name='order.item.add'),
-    
+    path('order/add/', OrderAddAPIView.as_view(), name='order.add'),
+    path('order/item/add/', OrderItemAddAPIView.as_view(), name='order.item.add'),
+    path('order/<int:pk>/', OrderDetailAPIView.as_view(), name='order.detail'),
+
     
     path('payment/request/', payment_view.send_request, name='request'),
     path('payment/verify/', payment_view.verify , name='verify'),

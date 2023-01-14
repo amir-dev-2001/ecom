@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+# from django.dispatch import receiver
+# from django.db.models.signals import post_save
 
 
 class User(AbstractUser):
@@ -35,14 +37,15 @@ class Product(models.Model):
     
     def __str__(self):
         return self.title    
-    
+   
+
     
 class Order(models.Model):
     user = models.ForeignKey(User, related_name="user_order", on_delete=models.CASCADE)
-    total = models.CharField(max_length=50, default=0)
 
-    address = models.TextField(blank=True, null=True)
-    postal_code = models.CharField(max_length=10 ,blank=True, null=True)
+    total = models.CharField(max_length=50, default=0)
+    address = models.TextField(default=None)
+    postal_code = models.CharField(max_length=10,default=None)
 
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -56,8 +59,9 @@ class OrderItem(models.Model):
     order = models.ForeignKey('Order', related_name="order_item", on_delete=models.CASCADE)
     product = models.ForeignKey(
         Product, related_name="order_product", on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    price = models.IntegerField()
     count = models.IntegerField(default=1)
-    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)    
 
@@ -65,3 +69,95 @@ class OrderItem(models.Model):
     def __str__(self):
         return str(self.id) + ' - ' + str(self.product) + ' => ' + str(self.order)
                 
+                
+
+'''
+class Order(models.Model):
+    PENDING_STATE = "p"
+    COMPLETED_STATE = "c"
+
+    ORDER_CHOICES = ((PENDING_STATE, "pending"), (COMPLETED_STATE, "completed"))
+
+    user = models.ForeignKey(User, related_name="order", on_delete=models.CASCADE)
+    order_number = models.CharField(max_length=250, blank=True, null=True)
+    status = models.CharField(
+        max_length=1, choices=ORDER_CHOICES, default=PENDING_STATE
+    )
+    is_paid = models.BooleanField(default=False)
+
+    address = models.TextField(default=None)
+    postal_code = models.CharField(max_length=10,default=None)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)    
+
+
+    @staticmethod
+    def create_order(buyer, order_number, address, is_paid=False):
+        order = Order()
+        order.buyer = buyer
+        order.order_number = order_number
+        order.address = address
+        order.is_paid = is_paid
+        order.save()
+        return order
+    
+    def __str__(self):
+        return str(self.user)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(
+        Order, related_name="order_items", on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        Product, related_name="product_order", on_delete=models.CASCADE
+    )
+    quantity = models.IntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)    
+
+    @staticmethod
+    def create_order_item(order, product, quantity, total):
+        order_item = OrderItem()
+        order_item.order = order
+        order_item.product = product
+        order_item.quantity = quantity
+        order_item.total = total
+        order_item.save()
+        return order_item    
+    
+    def __str__(self):
+        return str(self.product)    
+    
+# class Cart(models.Model):
+#     user = models.OneToOneField(
+#         User, related_name="user_cart", on_delete=models.CASCADE
+#     )
+#     total = models.DecimalField(
+#         max_digits=10, decimal_places=2, default=0, blank=True, null=True
+#     )
+
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)    
+
+
+# @receiver(post_save, sender=User)
+# def create_user_cart(sender, created, instance, *args, **kwargs):
+#     if created:
+#         Cart.objects.create(user=instance)
+
+
+# class CartItem(models.Model):
+#     cart = models.ForeignKey(Cart, related_name="cart_item", on_delete=models.CASCADE)
+#     product = models.ForeignKey(
+#         Product, related_name="cart_product", on_delete=models.CASCADE
+#     )
+#     quantity = models.IntegerField(default=1)    
+
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)    
+'''

@@ -3,7 +3,7 @@ from rest_framework import generics, permissions, exceptions
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Product, User, Order
-from .serializers import ProductSerializer, UserSerializer, UserProfileSerializer, OrderSerializer, OrderItemSerializer
+from .serializers import ProductSerializer, UserSerializer, UserProfileSerializer, OrderAddSerializer, OrderItemAddSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.fields import CurrentUserDefault
@@ -179,9 +179,9 @@ class UserProfileUpdateView(generics.UpdateAPIView):
                     
 
 
-class OrderAPIView(generics.CreateAPIView):
+class OrderAddAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = OrderSerializer
+    serializer_class = OrderAddSerializer
 
     def post(self, request):
         JWT_authenticator = JWTAuthentication()
@@ -191,22 +191,51 @@ class OrderAPIView(generics.CreateAPIView):
         print(request.data)
         request.data['user'] = user
         print(user)
+        # order_id = Order.objects.get('')
 
-        serializer = OrderSerializer(request)
+        serializer = OrderAddSerializer(request)
 
         return self.create(request) #and Response(serializer.data)
-            
-            
-class OrderItemAPIView(generics.CreateAPIView):
+    
+class OrderItemAddAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = OrderItemSerializer
+    serializer_class = OrderItemAddSerializer   
 
-    def post(self, request):
-        JWT_authenticator = JWTAuthentication()
-        response = JWT_authenticator.authenticate(request)
-        user = response[1]['user_id']
-        request.data['user'] = user
 
-        serializer = OrderItemSerializer(request)
-        return self.create(request) #and Response(serializer.data)
+class OrderDetailAPIView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    permission_classes = [IsAuthenticated]
+    # serializer_class = ord
+
+
+    # def get(self, request, pk):
+    #     order = Order.objects.get(pk=pk)
+    #     print(order)
+    #     return JsonResponse(order)
+    
+            
+# class OrderItemAPIView(generics.CreateAPIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = OrderItemSerializer
+
+#     def post(self, request):
+#         JWT_authenticator = JWTAuthentication()
+#         response = JWT_authenticator.authenticate(request)
+#         user = response[1]['user_id']
+#         request.data['user'] = user
+
+#         serializer = OrderItemSerializer(request)
+#         return self.create(request) #and Response(serializer.data)
                         
+                        
+# class OrderDetailAPIView(generics.ListAPIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = OrderDetailAPIView
+    # def get(self, request, pk):
+    #     queryset = OrderItem.objects.select_related().get(id=pk)
+    #     return 
+    # def get_queryset(self):
+    #     pk = self.kwargs['pk']
+    #     print( pk)
+    #     r = Order.objects.get(pk=pk)
+    #     return r
